@@ -86,42 +86,42 @@ Camera와 LiDAR 스트림이 독립적으로 작동하면서 매 스테이지마
 ```mermaid
 flowchart TD
     subgraph SIM["🖥️ CARLA Simulator (Ubuntu 24.04 / VMware)"]
-        CAM["📷 RGB Camera\n288×288 × 3ch"]
-        LIDAR["📡 LiDAR BEV\n256×256 × 2ch"]
+        CAM["📷 RGB Camera<br/>288×288 × 3ch"]
+        LIDAR["📡 LiDAR BEV<br/>256×256 × 2ch"]
     end
 
     subgraph PRE["⚙️ 전처리 모듈"]
-        IMG_PRE["Image Normalize\nImageNet mean/std"]
-        BEV["BEV 변환\nVoxelization → 2ch"]
+        IMG_PRE["Image Normalize<br/>ImageNet mean/std"]
+        BEV["BEV 변환<br/>Voxelization → 2ch"]
     end
 
     subgraph BACKBONE["🧠 Transfuser-Lite Backbone"]
         subgraph IMG_STREAM["📷 Image Stream"]
-            IS1["Stage1: 64ch 64×64\n❌ Transformer 제거"]
-            IS2["Stage2: 128ch 32×32\n❌ Transformer 제거"]
-            IS3["Stage3: 256ch 16×16\n✅ Transformer ① D=256 H=4"]
-            IS4["Stage4: 512ch 8×8\n✅ Transformer ② D=512 H=4"]
+            IS1["Stage1: 64ch 64×64<br/>❌ Transformer 제거"]
+            IS2["Stage2: 128ch 32×32<br/>❌ Transformer 제거"]
+            IS3["Stage3: 256ch 16×16<br/>✅ Transformer ① D=256 H=4"]
+            IS4["Stage4: 512ch 8×8<br/>✅ Transformer ② D=512 H=4"]
         end
         subgraph LID_STREAM["📡 LiDAR Stream"]
-            LS1["Stage1: 64ch 64×64\n❌ Transformer 제거"]
-            LS2["Stage2: 128ch 32×32\n❌ Transformer 제거"]
-            LS3["Stage3: 256ch 16×16\n✅ Transformer ① D=256 H=4"]
-            LS4["Stage4: 512ch 8×8\n✅ Transformer ② D=512 H=4"]
+            LS1["Stage1: 64ch 64×64<br/>❌ Transformer 제거"]
+            LS2["Stage2: 128ch 32×32<br/>❌ Transformer 제거"]
+            LS3["Stage3: 256ch 16×16<br/>✅ Transformer ① D=256 H=4"]
+            LS4["Stage4: 512ch 8×8<br/>✅ Transformer ② D=512 H=4"]
         end
     end
 
     subgraph OUT["📤 출력 및 제어"]
-        POOL["Global Avg Pooling\n512-dim × 2 → element-wise sum"]
-        GRU["GRU\n자동회귀 Waypoint 예측"]
-        WP["Waypoints\nδw₁ ~ δwT"]
+        POOL["Global Avg Pooling<br/>512-dim × 2 → element-wise sum"]
+        GRU["GRU<br/>자동회귀 Waypoint 예측"]
+        WP["Waypoints<br/>δw₁ ~ δwT"]
         PID["PID Controller"]
-        CTRL["CARLA Vehicle Control\nsteer / throttle / brake"]
+        CTRL["CARLA Vehicle Control<br/>steer / throttle / brake"]
     end
 
     CAM --> IMG_PRE --> IS1 --> IS2 --> IS3 --> IS4
     LIDAR --> BEV --> LS1 --> LS2 --> LS3 --> LS4
-    IS3 <-->|"Cross-Stream\nSelf-Attention"| LS3
-    IS4 <-->|"Cross-Stream\nSelf-Attention"| LS4
+    IS3 <-->|"Cross-Stream<br/>Self-Attention"| LS3
+    IS4 <-->|"Cross-Stream<br/>Self-Attention"| LS4
     IS4 --> POOL
     LS4 --> POOL
     POOL --> GRU --> WP --> PID --> CTRL
@@ -134,18 +134,18 @@ flowchart TD
 ```mermaid
 flowchart LR
     subgraph ORIG["❌ 원본 Transfuser"]
-        O1["Stage1 64×64\n🔴 Transformer\nO8192²"]
-        O2["Stage2 32×32\n🔴 Transformer\nO2048²"]
-        O3["Stage3 16×16\n🟡 Transformer\nO512²"]
-        O4["Stage4 8×8\n🟢 Transformer\nO128²"]
+        O1["Stage1 64×64<br/>🔴 Transformer<br/>O8192²"]
+        O2["Stage2 32×32<br/>🔴 Transformer<br/>O2048²"]
+        O3["Stage3 16×16<br/>🟡 Transformer<br/>O512²"]
+        O4["Stage4 8×8<br/>🟢 Transformer<br/>O128²"]
         O1 --> O2 --> O3 --> O4
     end
 
     subgraph LITE["✅ Transfuser-Lite (제안)"]
-        L1["Stage1 64×64\n⚡ CNN Only\n제거"]
-        L2["Stage2 32×32\n⚡ CNN Only\n제거"]
-        L3["Stage3 16×16\n🟡 Transformer\nO512²"]
-        L4["Stage4 8×8\n🟢 Transformer\nO128²"]
+        L1["Stage1 64×64<br/>⚡ CNN Only<br/>제거"]
+        L2["Stage2 32×32<br/>⚡ CNN Only<br/>제거"]
+        L3["Stage3 16×16<br/>🟡 Transformer<br/>O512²"]
+        L4["Stage4 8×8<br/>🟢 Transformer<br/>O128²"]
         L1 --> L2 --> L3 --> L4
     end
 ```
@@ -157,23 +157,23 @@ flowchart LR
 ```mermaid
 flowchart LR
     subgraph TRAIN["🏋️ 학습 (PC / Server)"]
-        PT["PyTorch Model\n.pth\n+ KD Loss"]
+        PT["PyTorch Model<br/>.pth<br/>+ KD Loss"]
     end
 
     subgraph EXPORT["🔄 변환 파이프라인"]
-        ONNX["ONNX Model\n.onnx"]
-        TRT_FP16["TensorRT\nFP16  .trt"]
-        TRT_INT8["TensorRT\nINT8  .trt"]
+        ONNX["ONNX Model<br/>.onnx"]
+        TRT_FP16["TensorRT<br/>FP16  .trt"]
+        TRT_INT8["TensorRT<br/>INT8  .trt"]
     end
 
-    subgraph JETSON["⚡ Jetson AGX Orin 64GB\nJetPack 6.x / TensorRT 8.x"]
-        INFER["실시간 추론\n목표: ≥ 10 FPS"]
-        BENCH["벤치마크\nFPS / Latency / Memory"]
+    subgraph JETSON["⚡ Jetson AGX Orin 64GB<br/>JetPack 6.x / TensorRT 8.x"]
+        INFER["실시간 추론<br/>목표: ≥ 10 FPS"]
+        BENCH["벤치마크<br/>FPS / Latency / Memory"]
     end
 
-    PT -->|"torch.onnx.export()\nopset=17"| ONNX
+    PT -->|"torch.onnx.export()<br/>opset=17"| ONNX
     ONNX -->|"trtexec --fp16"| TRT_FP16
-    ONNX -->|"trtexec --int8\n+ calibration"| TRT_INT8
+    ONNX -->|"trtexec --int8<br/>+ calibration"| TRT_INT8
     TRT_FP16 --> INFER
     TRT_INT8 --> INFER
     INFER --> BENCH
@@ -372,3 +372,5 @@ python jetson/benchmark.py --engine outputs/transfuser_lite_fp16.trt
 - **개발 기간**: 2026.03 ~ 06
 
 ---
+
+> 💡 **진행 상황은 각 Phase 완료 시 README 및 Wiki에 업데이트됩니다.**
