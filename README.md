@@ -1,7 +1,7 @@
 # 🚗 Transfuser-Lite
 ### Lightweight Transfuser with TensorRT Optimization on Jetson AGX Orin
 
-> **캡스톤 디자인 | 임베디드소프트웨어학과 4학년**  
+> **캡스톤 디자인 | 임베디드소프트웨어학과 2301425 신민서**  
 > Transfuser 모델 경량화 및 Jetson AGX Orin 기반 실시간 자율주행 추론 시스템 구현
 
 ---
@@ -35,7 +35,7 @@ Stage 4: 512ch Feature Map ( 8×8)   →  Transformer Block ④ (D=512, Heads=4)
 
 ### ⚠️ 임베디드 배포가 어려운 진짜 이유
 
-원본 Transfuser의 임베디드 배포 병목은 **ResNet 백본이 아닌 Transformer 구조**에 있습니다.
+원본 Transfuser의 임베디드 배포 병목은 **Transformer 구조**에 있습니다.
 
 **① Self-Attention의 O(n²) 복잡도 문제**
 
@@ -367,10 +367,8 @@ python jetson/benchmark.py --engine outputs/transfuser_lite_fp16.trt
 
 ## 👤 작성자
 
-- **소속**: 임베디드소프트웨어학과 4학년
+- **소속**: 임베디드소프트웨어학과 2301425 신민서
 - **과목**: 캡스톤 디자인
-- **개발 기간**: 2026.03 ~
+- **개발 기간**: 2026.03 ~ 06
 
 ---
-
-> 💡 **진행 상황은 각 Phase 완료 시 README 및 Wiki에 업데이트됩니다.**
