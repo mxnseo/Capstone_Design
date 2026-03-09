@@ -33,7 +33,7 @@ Stage 4: 512ch Feature Map ( 8×8)   →  Transformer Block ④ (D=512, Heads=4)
 최종: 512-dim 벡터 (element-wise sum) → MLP → GRU → Waypoint 예측
 ```
 
-### ⚠️ 임베디드 배포가 어려운 진짜 이유
+### ⚠️ 임베디드 배포가 어려운 이유
 
 원본 Transfuser의 임베디드 배포 병목은 **Transformer 구조**에 있습니다.
 
